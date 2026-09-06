@@ -3,10 +3,13 @@ from forms.solicitud_form import SolicitudForm
 from forms.cuenta_form import CuentaForm
 from forms.transferencia_form import TransferenciaForm
 from forms.pago_form import PagoForm
+from database import inicializar_bd, obtener_cuentas, insertar_cuenta
 
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "bangye-clave-segura-2026"
+
+inicializar_bd()
 
 informacion_sistema = {
     "nombre": "BanGYE Digital",
@@ -36,7 +39,6 @@ servicios = [
 ]
 
 
-
 solicitudes_registradas = [
     {
         "id": "001",
@@ -63,44 +65,6 @@ solicitudes_registradas = [
         "estado": "Pendiente"
     }
 ]
-
-
-
-cuentas_bancarias = [
-    {
-        "numero": "001-000123",
-        "titular": "María González",
-        "tipo": "Cuenta de Ahorros",
-        "descripcion": "Cuenta destinada al ahorro y administración de fondos.",
-        "fecha": "05/06/2026",
-        "estado": "Activa"
-    },
-    {
-        "numero": "001-000456",
-        "titular": "Carlos Mendoza",
-        "tipo": "Cuenta Corriente",
-        "descripcion": "Cuenta para gestionar operaciones y movimientos financieros.",
-        "fecha": "21/06/2026",
-        "estado": "Activa"
-    },
-    {
-        "numero": "001-000789",
-        "titular": "Andrea López",
-        "tipo": "Cuenta Corriente",
-        "descripcion": "Cuenta para gestionar operaciones y movimientos financieros.",
-        "fecha": "10/07/2026",
-        "estado": "Pendiente"
-    },
-    {
-        "numero": "001-000812",
-        "titular": "José Ramírez",
-        "tipo": "Cuenta de Ahorros",
-        "descripcion": "Cuenta destinada al ahorro y administración de fondos.",
-        "fecha": "28/07/2026",
-        "estado": "Activa"
-    }
-]
-
 
 
 transferencias_realizadas = [
@@ -141,7 +105,6 @@ transferencias_realizadas = [
         "estado": "Completada"
     }
 ]
-
 
 
 pagos_disponibles = [
@@ -224,7 +187,18 @@ def cuentas():
 
     if form.validate_on_submit():
 
+        insertar_cuenta(
+            numero=form.numero.data,
+            titular=form.titular.data,
+            tipo=form.tipo.data,
+            descripcion=form.descripcion.data,
+            fecha="28/08/2026",
+            estado=form.estado.data
+        )
+
         return redirect(url_for("cuentas"))
+
+    cuentas_bancarias = obtener_cuentas()
 
     return render_template(
         "cuentas.html",
